@@ -53,6 +53,8 @@ public class BukkitConfig extends Config {
         setPlayerCacheUUIDPrefix(bukkitConfig.getInt("client.playerCacheUUIDPrefix", getPlayerCacheUUIDPrefix()));
         setServerName(bukkitConfig.getString("client.serverName", getServerName()));
         setShowLastOnline(bukkitConfig.getBoolean("client.showLastOnline", isShowLastOnline()));
+
+        setLogFrontEndUpdates(bukkitConfig.getBoolean("logging.front-end-updates", getLogFrontEndUpdates()));
     }
 
     public String getWebSubdir() {

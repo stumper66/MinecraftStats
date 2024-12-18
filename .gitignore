@@ -2,6 +2,7 @@
 .gradle
 bin
 build
+.idea/
 
 # Dev
 .vscode

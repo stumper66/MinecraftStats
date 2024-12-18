@@ -31,6 +31,8 @@ public class Config {
     private int playerCacheUUIDPrefix = 2;
     private String defaultLanguage = "en";
 
+    private boolean logFrontEndUpdates = true;
+
     public Config() {
     }
 
@@ -177,4 +179,8 @@ public class Config {
     public void setEventsPath(Path eventsPath) {
         this.eventsPath = eventsPath;
     }
+
+    public boolean getLogFrontEndUpdates() { return this.logFrontEndUpdates; }
+
+    public void setLogFrontEndUpdates(boolean logFrontEndUpdates) { this.logFrontEndUpdates = logFrontEndUpdates; }
 }
