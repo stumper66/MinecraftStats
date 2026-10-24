@@ -1,7 +1,7 @@
 name: MinecraftStats
 main: de.pdinklag.mcstats.bukkit.MinecraftStatsPlugin
 version: @@MCSTATS_VERSION@@
-api-version: 1.13
+api-version: 1.21
 softdepend:
   - dynmap
   - SkinsRestorer

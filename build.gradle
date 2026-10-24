@@ -1,7 +1,7 @@
 plugins {
     id 'application'
     id 'java'
-    id 'org.gradlewebtools.minify' version '1.3.2'
+    id 'org.gradlewebtools.minify' version '2.1.1'
 }
 
 application {
@@ -10,6 +10,7 @@ application {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.papermc.io/repository/maven-public/'}
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url 'https://oss.sonatype.org/content/repositories/central' }
@@ -17,26 +18,26 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.json:json:20220924'
-    compileOnly 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
-    compileOnly 'net.skinsrestorer:skinsrestorer-api:15.0.0'
+    implementation 'org.json:json:20260814'
+    compileOnly 'io.papermc.paper:paper-api:26.3.build.+'
+    compileOnly 'net.skinsrestorer:skinsrestorer-api:15.12.6'
 }
 
-task concatJs {
+tasks.register('concatJs') {
     inputs.files(
-        'www/js/dev/mcstats.js',
-        'www/js/dev/mcstats-localization.js',
-        'www/js/dev/mcstats-widgets.js',
-        'www/js/dev/mcstats-awardlist.js',
-        'www/js/dev/mcstats-awardview.js',
-        'www/js/dev/mcstats-eventlist.js',
-        'www/js/dev/mcstats-eventview.js',
-        'www/js/dev/mcstats-playerlist.js',
-        'www/js/dev/mcstats-playerview.js',
-        'www/js/dev/mcstats-hof.js',
-        'www/js/dev/mcstats-loader.js',
-        'www/js/dev/mcstats-start.js')
-    outputs.file("build/js/mcstats.js" )
+            'www/js/dev/mcstats.js',
+            'www/js/dev/mcstats-localization.js',
+            'www/js/dev/mcstats-widgets.js',
+            'www/js/dev/mcstats-awardlist.js',
+            'www/js/dev/mcstats-awardview.js',
+            'www/js/dev/mcstats-eventlist.js',
+            'www/js/dev/mcstats-eventview.js',
+            'www/js/dev/mcstats-playerlist.js',
+            'www/js/dev/mcstats-playerview.js',
+            'www/js/dev/mcstats-hof.js',
+            'www/js/dev/mcstats-loader.js',
+            'www/js/dev/mcstats-start.js')
+    outputs.file("build/js/mcstats.js")
     doLast {
         outputs.files.singleFile.withOutputStream { out ->
             for (file in inputs.files) file.withInputStream { out << it << '\n' }
@@ -58,7 +59,7 @@ task minifyCss(type: org.gradlewebtools.minify.CssMinifyTask) {
     dstDir = project.file('build/www')
 }
 
-task copyWww(type: Copy) {
+tasks.register('copyWww', Copy) {
     dependsOn minifyJs
     dependsOn minifyCss
 
@@ -74,8 +75,8 @@ task copyWww(type: Copy) {
 }
 
 compileJava {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = '25'
+    targetCompatibility = '25'
 }
 
 def cliBaseName = 'MinecraftStatsCLI'
@@ -90,14 +91,14 @@ def pluginResources = "${resourcesDir}/plugin"
 
 def version = project.file('version.txt').text
 
-task resourcesCli (type: Copy) {
+tasks.register('resourcesCli', Copy) {
     from('.') {
         include 'version.txt'
     }
     into cliResources
 }
 
-task jarCli (type: Jar) {
+tasks.register('jarCli', Jar) {
     archiveBaseName = cliBaseName
 
     dependsOn resourcesCli
@@ -105,7 +106,7 @@ task jarCli (type: Jar) {
 
     manifest {
         attributes(
-            'Main-Class': application.mainClass
+                'Main-Class': application.mainClass
         )
     }
     from sourceSets.main.runtimeClasspath.collect { it.getName().endsWith('.jar') ? zipTree(it) : it }
@@ -113,7 +114,7 @@ task jarCli (type: Jar) {
     from cliResources
 }
 
-task resourcesPlugin (type: Copy) {
+tasks.register('resourcesPlugin', Copy) {
     from('config/plugin') {
         include '*.yml'
     }
@@ -121,7 +122,7 @@ task resourcesPlugin (type: Copy) {
     filter { line -> line.replaceAll('@@MCSTATS_VERSION@@', version) }
 }
 
-task jarPlugin (type: Jar) {
+tasks.register('jarPlugin', Jar) {
     archiveBaseName = pluginBaseName
 
     dependsOn resourcesPlugin
@@ -138,7 +139,7 @@ task jarPlugin (type: Jar) {
     }
 }
 
-task releaseCli (type: Zip) {
+tasks.register('releaseCli', Zip) {
     dependsOn jarCli
     from(libsDir) {
         include "${cliBaseName}.jar"
@@ -151,7 +152,7 @@ task releaseCli (type: Zip) {
     destinationDirectory = file(releaseDir)
 }
 
-task releasePlugin (type: Copy) {
+tasks.register('releasePlugin', Copy) {
     dependsOn jarPlugin
     from(libsDir) {
         include "${pluginBaseName}.jar"
@@ -159,7 +160,7 @@ task releasePlugin (type: Copy) {
     into releaseDir
 }
 
-task releaseWeb (type: Zip) {
+tasks.register('releaseWeb', Zip) {
     dependsOn copyWww
     from 'build/www/'
 
@@ -167,7 +168,7 @@ task releaseWeb (type: Zip) {
     destinationDirectory = file(releaseDir)
 }
 
-task release {
+tasks.register('release') {
     dependsOn releaseCli
     dependsOn releasePlugin
     dependsOn releaseWeb

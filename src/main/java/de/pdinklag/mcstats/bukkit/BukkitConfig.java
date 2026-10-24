@@ -1,7 +1,9 @@
 package de.pdinklag.mcstats.bukkit;
 
+import java.io.File;
 import java.nio.file.Path;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.Plugin;
 
@@ -15,8 +17,18 @@ public class BukkitConfig extends Config {
 
     public BukkitConfig(Plugin plugin)  {
         // create data source for default world
-        final String defaultWorldName = plugin.getServer().getWorlds().get(0).getName();
-        getDataSources().add(new FileSystemDataSource(Path.of(plugin.getServer().getWorldContainer().getAbsolutePath()), defaultWorldName));
+        final String defaultWorldName = plugin.getServer().getWorlds().getFirst().getName();
+        final String path = plugin.getServer().getWorldContainer().getAbsolutePath();
+        String extraDirName = "";
+
+        // 26.1 and newer this data was moved to players dir
+        if (!Bukkit.getServer().getVersion().startsWith("1."))
+            extraDirName = File.separatorChar + "players";
+
+        getDataSources().add(
+                new FileSystemDataSource(Path.of(path),
+                        defaultWorldName + extraDirName
+                ));
 
         // read config
         final Configuration bukkitConfig = plugin.getConfig();

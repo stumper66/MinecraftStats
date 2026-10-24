@@ -27,7 +27,7 @@ public class SkinsRestorerProfileProvider implements PlayerProfileProvider {
             player.setAccountType(AccountType.MOJANG);
             return new PlayerProfile(
                     PropertyUtils.getSkinProfileData(skinProperty.get()).getProfileName(),
-                    PropertyUtils.getSkinTextureUrlStripped(skinProperty.get()),
+                    PropertyUtils.getSkinTextureHash(skinProperty.get()),
                     System.currentTimeMillis());
         } else if (player.getAccountType().maybeMojangAccount()) {
             player.setAccountType(AccountType.OFFLINE);

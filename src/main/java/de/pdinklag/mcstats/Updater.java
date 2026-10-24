@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -219,7 +218,7 @@ public abstract class Updater {
     }
 
     private void writePlayerList(Collection<Player> players, String filenameFormat) {
-        if (players.size() == 0) {
+        if (players.isEmpty()) {
             // if there are no players, generate the first page as empty
             final JSONArray empty = new JSONArray(0);
 
@@ -231,8 +230,7 @@ public abstract class Updater {
             }
         } else {
             final ArrayList<Player> playersSorted = new ArrayList<>(players);
-            Collections.sort(playersSorted,
-                    (a, b) -> a.getProfile().getName().compareToIgnoreCase(b.getProfile().getName()));
+            playersSorted.sort((a, b) -> a.getProfile().getName().compareToIgnoreCase(b.getProfile().getName()));
 
             final int playersPerPage = config.getPlayersPerPage();
             final int numPlayers = players.size();
